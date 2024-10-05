@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 from datetime import date
+
 
 # Class to store member data
 class Member:
@@ -52,10 +54,25 @@ class MemberApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Habitat for Humanity Member Manager")
+        
+        
+        
 
         # Increase window size for a better layout
         self.root.geometry("1000x1000")
         self.root.configure(background='gray55')
+
+        # Load the image
+        image_path = "main.jpg"
+        image = Image.open(image_path)
+        photo = ImageTk.PhotoImage(image)
+
+        # Create a Label widget to display the image
+        background_label = tk.Label(self.root, image=photo)
+        background_label.place(x=-250, y=-250, relwidth=1.50, relheight=1.50)
+        self.photo = photo  
+
+        
 
         # Labels and Entry fields for member details with consistent size
         entry_width = 60
