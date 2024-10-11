@@ -2,11 +2,11 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from datetime import date
-
+import json
 
 # Class to store member data
 class Member:
-    def __init__(self, first_name, last_name, address, email_address, contact_phone, birthday, join_date):
+    def __init__(self, first_name: str, last_name: str, address: str, email_address: str, contact_phone: str, birthday: str, join_date: str):
         self.first_name = first_name
         self.last_name = last_name
         self.address = address
@@ -18,6 +18,18 @@ class Member:
 
     def add_skill(self, skill):
         self.skills.append(skill)
+    
+    def get_dict(self):
+        dict_obj = {
+            'first name': self.first_name,
+            'last name': self.last_name,
+            'address': self.address,
+            'email address': self.email_address,
+            'phone number': self.contact_phone,
+            'birthday': self.birthday,
+            'join date': self.join_date
+        }
+        return dict_obj
 
 # Class to store role/skills and assign them to members
 class Role:
@@ -54,22 +66,20 @@ class MemberApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Habitat for Humanity Member Manager")
-        
-        
-        
 
         # Increase window size for a better layout
-        self.root.geometry("1000x1000")
-        self.root.configure(background='gray55')
+        self.root.geometry("850x1000")
+        self.root.resizable(width=False, height=False)
+        # self.root.configure(background='gray55')
 
         # Load the image
-        image_path = "main.jpg"
+        image_path = "main.png"
         image = Image.open(image_path)
         photo = ImageTk.PhotoImage(image)
 
         # Create a Label widget to display the image
         background_label = tk.Label(self.root, image=photo)
-        background_label.place(x=-250, y=-250, relwidth=1.50, relheight=1.50)
+        background_label.place(x=400, y=250, relwidth=0.6, relheight=0.5)
         self.photo = photo  
 
         
@@ -172,10 +182,16 @@ class MemberApp:
         if not first_name or not contact_phone:
             messagebox.showwarning("Input Error", "First name and contact phone are required!")
             return
+        
+
 
         # Create a new member object and add it to the list
         member = Member(first_name, last_name, address, email_address, contact_phone, birthday, join_date)
-        members.append(member)
+        members.append(member.get_dict())
+
+        #write data to text file
+        memberfile = open("members.txt", "a")
+        memberfile.write('First name: ' + member.first_name + ', Last name: ' + member.last_name + ', Adress: ' + member.address + ', Email: ' + member.email_address + ', Phone number: ' + member.contact_phone + ', Birthdday: ' + member.birthday + ', Join Date: ' + member.join_date + '\n')
 
         # Update the display list
         self.members_listbox.insert(tk.END, f"{first_name} {last_name} - {contact_phone} - {email_address}")
