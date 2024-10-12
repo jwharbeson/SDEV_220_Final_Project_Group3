@@ -2,13 +2,9 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from datetime import date
-<<<<<<< HEAD
 import sched
 import time
 
-=======
-import json
->>>>>>> a4dd1279d6e2a8004c28ca5aac3724b95e78a2ae
 
 # Class to store member data
 class Member:
