@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from datetime import date
+import sched
+import time
 
 
 # Class to store member data
@@ -126,7 +128,7 @@ class MemberApp:
         # List to display members
         self.members_listbox = tk.Listbox(root, width=entry_width, relief='sunken', borderwidth=3, background='gray64', fg='black')
         self.members_listbox.grid(row=8, column=0, columnspan=2, sticky="e", padx=10, pady=10)
-
+        
         # Assign Role button
         self.assign_role_button = tk.Button(root, text=" Assign Role", command=self.assign_role, relief='raised', borderwidth=3, background='gray64', fg='black')
         self.assign_role_button.grid(row=9, column=1, padx=10, pady=10)
@@ -150,14 +152,35 @@ class MemberApp:
         self.send_message_button.grid(row=14, column=1, padx=10, pady=10)
 
         # Custom message entry
-        self.custom_message_label = tk.Label(root, text=" Custom Message: ", relief='groove', borderwidth=3, background='gray25', fg='white')
+        self.custom_message_label = tk.Label(root, text="Custom Message: ", relief='groove', borderwidth=3, background='gray25', fg='white')
         self.custom_message_label.grid(row=15, column=0, sticky="w", padx=10, pady=5)
         self.custom_message_entry = tk.Entry(root, width=entry_width, relief='sunken', borderwidth=3, background='gray64', fg='black')
         self.custom_message_entry.grid(row=15, column=1, padx=10, pady=5)
 
-        # Text box to display role members
-        self.role_members_textbox = tk.Listbox(root, width=entry_width, height=10, relief='sunken', borderwidth=3, background='gray64', fg='black')
-        self.role_members_textbox.grid(row=12, column=0, columnspan=2, sticky="e", padx=10, pady=10)
+        # Time entry fields
+        self.time_label = tk.Label(root, text="Schedule Time (HH:MM:SS):", relief='groove', borderwidth=3, background='gray25', fg='white')
+        self.time_label.grid(row=16, column=0, sticky="w", padx=10, pady=5)
+        self.time_entry = tk.Entry(root, width=entry_width, relief='sunken', borderwidth=3, background='gray64', fg='black')
+        self.time_entry.grid(row=16, column=1, padx=10, pady=5)
+
+    def send_messages(self):
+        message = self.custom_message_entry.get()
+        messagebox.showinfo("Message Sent", message)
+
+    def schedule_message(self):
+        message = self.custom_message_entry.get()
+        schedule_time = self.time_entry.get()
+
+        # Parse the time entry to seconds
+        hours, minutes, seconds = map(int, schedule_time.split(':'))
+        scheduled_time = time.time() + (hours * 3600 + minutes * 60 + seconds)
+
+        # Schedule the message
+        self.scheduler.enterabs(scheduled_time, 1, self.send_messages)
+        self.scheduler.run()
+
+
+        
 
     def add_member(self):
         # Get the details from the entries
@@ -185,7 +208,7 @@ class MemberApp:
 
     def assign_role(self):
         # Get selected member and role
-        selected_index = self.members_listbox.curselection()
+        selected_index = self.role_members_textbox.curselection()
         if not selected_index:
             messagebox.showwarning("Selection Error", "No member selected!")
             return
@@ -204,6 +227,7 @@ class MemberApp:
 
         messagebox.showinfo("Role Assignment", f"{member.first_name} {member.last_name} assigned to role '{role_name}'.")
 
+
     def view_role_members(self):
         role_name = self.role_entry.get()
         if role_name not in roles:
@@ -211,13 +235,13 @@ class MemberApp:
             return
 
         role_members = roles[role_name].get_members()
-        self.role_members_textbox.delete("1.0", tk.END)  # Clear existing text
+        self.role_members_textbox.delete(0, tk.END)  # Clear existing text
         self.role_members_textbox.insert(tk.END, f"Members in role '{role_name}':\n")
         self.role_members_textbox.insert(tk.END, "\n".join(role_members))
 
     def schedule_message(self):
         # Get selected member and custom message
-        selected_index = self.members_listbox.curselection()
+        selected_index = self.role_members_textbox.curselection()
         if not selected_index:
             messagebox.showwarning("Selection Error", "No member selected!")
             return
@@ -242,11 +266,13 @@ class MemberApp:
         self.first_name_entry.delete(0, tk.END)
         self.last_name_entry.delete(0, tk.END)
         self.address_entry.delete(0, tk.END)
+        self.email_entry.delete(0, tk.END)
         self.contact_entry.delete(0, tk.END)
         self.birthday_entry.delete(0, tk.END)
         self.join_date_entry.delete(0, tk.END)
         self.role_entry.delete(0, tk.END)
         self.custom_message_entry.delete(0, tk.END)
+        self.time_entry.delete(0, tk.END)
 
 # Running the application
 if __name__ == "__main__":
