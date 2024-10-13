@@ -1,0 +1,12 @@
+[
+    {
+        "first_name": "John",
+        "last_name": "Doe",
+        "address": "600 1st St",
+        "email_address": "john.doe@gmail.com",
+        "contact_phone": "1234567890",
+        "birthday": "12-10-2000",
+        "join_date": "10-13-2024",
+        "role": "Team Leader"
+    }
+]
